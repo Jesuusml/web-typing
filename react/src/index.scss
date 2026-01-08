@@ -1,68 +1,143 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+// Variables
+$font-mono: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+$font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+$bg-dark: #0f0f0f;
+$bg-secondary: #1a1a1a;
+$text-primary: #e0e0e0;
+$text-secondary: #a0a0a0;
+$accent-purple: #6b3fa0;
+$correct: #2ecc71;
+$error: #e74c3c;
+$pending: #4a4a4a;
+
+// Base
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  --bg: #{$bg-dark};
+  --bg-secondary: #{$bg-secondary};
+  --text: #{$text-primary};
+  --text-secondary: #{$text-secondary};
+  --accent: #{$accent-purple};
+  --correct: #{$correct};
+  --error: #{$error};
+  --pending: #{$pending};
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: $font-sans;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+// Typography
+.text-display {
+  font-family: $font-mono;
+  font-size: 24px;
+  line-height: 1.8;
+  letter-spacing: 0.5px;
+
+  .correct {
+    color: var(--correct);
+  }
+
+  .error {
+    color: var(--error);
+  }
+
+  .pending {
+    color: var(--pending);
+  }
+
+  .current {
+    border-bottom: 2px solid var(--accent);
+  }
 }
 
+// Buttons
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+  background: var(--accent);
+  color: var(--text);
+  border: none;
+  padding: 12px 24px;
+  font-family: $font-sans;
+  font-size: 14px;
   font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  border-radius: 6px;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  transition: all 150ms ease;
+
+  &:hover {
+    background: lighten($accent-purple, 10%);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+// Stats
+.stats {
+  display: flex;
+  gap: 32px;
+  font-family: $font-mono;
+  font-size: 14px;
+  color: var(--text-secondary);
+
+  .stat-value {
+    color: var(--accent);
+    font-size: 24px;
+    font-weight: 600;
   }
-  a:hover {
-    color: #747bff;
+}
+
+// Input
+.input-container {
+  position: relative;
+
+  .text-display {
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
   }
-  button {
-    background-color: #f9f9f9;
+
+  input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    background: transparent;
+    color: transparent;
+    border: 1px solid var(--bg-secondary);
+    font-family: $font-mono;
+    font-size: 18px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    outline: none;
+    transition: border 150ms ease;
+
+    /* caret-color: var(--accent); */
+    z-index: 2;
+
+    &::selection {
+      background: transparent;
+    }
+
+    &:focus {
+      border-color: var(--accent);
+    }
   }
 }
