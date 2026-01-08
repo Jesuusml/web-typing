@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 function Home() {
   const [fullText, setFullText] = useState('Hello world');
@@ -29,6 +29,14 @@ function Home() {
     }
   }
 
+  const nextLevel = () => {}
+
+  useEffect(() => {
+    if (!targetChar.length) {
+      nextLevel();
+    }
+  }, [targetChar.length]);
+
   return (
     <>
       <br />
@@ -36,9 +44,15 @@ function Home() {
 
       <div className="input-container">
         <div className="text-display">
-          <span className="correct">{completedText}</span>
-          <span className="pending current">{targetChar}</span>
-          <span className="pending">{pendingText}</span>
+          {targetChar.length ? (
+            <>
+              <span className="correct">{completedText}</span>
+              <span className="pending current">{targetChar}</span>
+              <span className="pending">{pendingText}</span>
+            </>
+          ) : (
+            <span>Completado !</span>
+          )}
         </div>
         <input
           type="text"
