@@ -4,13 +4,15 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 function Home() {
-  const [displayText, setDisplayText] = useState('nivel 1');
-  const [newDisplayText, setNewDisplayText] = useState('');
+  const [displayText, setDisplayText] = useState('level 1');
   const [targetIndex, setTargetIndex] = useState(0);
   const [typo, setTypo] = useState(false);
   const [errorKey, setErrorKey] = useState(0);
-  const inputRef = useRef(null);
   const [animating, setAnimating] = useState(false);
+  const inputRef = useRef(null);
+  const typewriterSlideFX = useRef(new Audio('/typewriter-slide.mp3'));
+  const typewriterEndFX = useRef(new Audio('/typewriter-end.mp3'));
+  const animationTime = 1200;
 
   // For display:
   const { completedText, targetChar, pendingText } = useMemo(() => ({
@@ -41,12 +43,23 @@ function Home() {
   }
 
   const nextLevel = () => {
-    const newText = 'level 2';
+    const newText = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde ipsam cum modi eveniet eum dolores, accusantium quia quis, ducimus dicta iure?';
+
+    // Resets variables
+    setDisplayText(newText);
+    setTargetIndex(0);
+    setTypo(false);
+
+    // Starts animation
+    setAnimating(true);
+    setTimeout(() => {
+      setAnimating(false);
+    }, animationTime + 10);
   };
 
   useEffect(() => {
     if (completedText.length === displayText.length) {
-      setAnimating(true);
+      nextLevel();
     }
   }, [completedText.length]);
 
@@ -56,7 +69,6 @@ function Home() {
     }
     else {
       inputRef.current?.blur();
-      nextLevel();
     }
   }, [animating]);
 
@@ -68,7 +80,18 @@ function Home() {
       <div>Typos: {errorKey}</div>
 
       <div className="input-container">
-        <div className={`text-display ${animating ? 'slide-up' : ''}`}>
+        <div
+          className={`text-display ${animating ? 'slide-in' : ''}`}
+          style={{ '--animation-time': `${animationTime}ms` }}
+          onTransitionStart={() => {
+            typewriterSlideFX.current.currentTime = 0;
+            typewriterSlideFX.current.play();
+          }}
+          onTransitionEnd={() => {
+            typewriterEndFX.current.currentTime = 0;
+            typewriterEndFX.current.play();
+          }}
+        >
           {/* <span className="correct">{completedText}</span> */}
           <span></span>
           <span key={errorKey} className={`pending current ${typo ? 'error-flash' : ''}`}>
@@ -76,7 +99,7 @@ function Home() {
           </span>
           <span className="pending">{pendingText}</span>
         </div>
-        
+
         <input
           ref={inputRef}
           type="text"

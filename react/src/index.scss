@@ -47,6 +47,11 @@ body {
   font-size: 24px;
   line-height: 1.8;
   letter-spacing: 0.5px;
+  white-space: nowrap;
+
+  &.slide-in {
+    animation: slide-in var(--animation-time) cubic-bezier(0.55, 0, 1, 1) forwards;
+  }
 
   .correct {
     color: var(--correct);
@@ -62,6 +67,16 @@ body {
 
   .current {
     border-bottom: 2px solid var(--accent);
+  }
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(calc(-100vw - 100%));
+  }
+
+  100% {
+    transform: translateX(0);
   }
 }
 
@@ -118,8 +133,6 @@ button {
     width: 100%;
     padding: 0.3rem 0.7rem;
     font-size: 1.5rem;
-
-    &.slide-up {}
   }
 
   input {
