@@ -4,27 +4,28 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 function Home() {
-  const [fullText, setFullText] = useState('Hello world');
+  const [displayText, setDisplayText] = useState('nivel 1');
+  const [newDisplayText, setNewDisplayText] = useState('');
   const [targetIndex, setTargetIndex] = useState(0);
   const [typo, setTypo] = useState(false);
   const [errorKey, setErrorKey] = useState(0);
   const inputRef = useRef(null);
-  const [disabledFocus, setDisabledFocus] = useState(false);
+  const [animating, setAnimating] = useState(false);
 
   // For display:
   const { completedText, targetChar, pendingText } = useMemo(() => ({
-    completedText: fullText.slice(0, targetIndex) || '',
-    targetChar: fullText[targetIndex] || '',
-    pendingText: fullText.slice(targetIndex + 1) || ''
-  }), [fullText, targetIndex]);
+    completedText: displayText.slice(0, targetIndex) || '',
+    targetChar: displayText[targetIndex] || '',
+    pendingText: displayText.slice(targetIndex + 1) || ''
+  }), [displayText, targetIndex]);
 
   const handleTyping = (e) => {
     e.preventDefault();
 
-    if (e.repeat || targetIndex >= fullText.length) return;
+    if (e.repeat || animating) return;
 
-    if (e.key.length === 1) {
-      if (e.key === fullText[targetIndex]) {
+    else if (e.key.length === 1) {
+      if (e.key === displayText[targetIndex]) {
         setTypo(false);
         setTargetIndex(prev => prev + 1);
       }
@@ -32,33 +33,32 @@ function Home() {
         setTypo(true);
         setErrorKey(prev => prev + 1);
       }
-      return;
     }
 
-    if (e.key === 'Backspace' && targetIndex > 0) {
+    else if (e.key === 'Backspace' && targetIndex > 0) {
       setTargetIndex(prev => prev - 1);
-      return;
     }
   }
 
-  const nextLevel = () => {}
+  const nextLevel = () => {
+    const newText = 'level 2';
+  };
 
-  // Triggers logic for next level
   useEffect(() => {
-    if (!targetChar.length) {
-      nextLevel();
+    if (completedText.length === displayText.length) {
+      setAnimating(true);
     }
-  }, [targetChar.length]);
+  }, [completedText.length]);
 
-  // Controls input focus
   useEffect(() => {
-    if (!disabledFocus) {
+    if (!animating) {
       inputRef.current?.focus();
     }
     else {
       inputRef.current?.blur();
+      nextLevel();
     }
-  }, [disabledFocus]);
+  }, [animating]);
 
   return (
     <>
@@ -68,19 +68,15 @@ function Home() {
       <div>Typos: {errorKey}</div>
 
       <div className="input-container">
-        <div className="text-display">
-          {targetChar.length ? (
-            <>
-              <span className="correct">{completedText}</span>
-              <span key={errorKey} className={`pending current ${typo ? 'error-flash' : ''}`}>
-                {targetChar}
-              </span>
-              <span className="pending">{pendingText}</span>
-            </>
-          ) : (
-            <span>Completado !</span>
-          )}
+        <div className={`text-display ${animating ? 'slide-up' : ''}`}>
+          {/* <span className="correct">{completedText}</span> */}
+          <span></span>
+          <span key={errorKey} className={`pending current ${typo ? 'error-flash' : ''}`}>
+            {targetChar === ' ' ? <>&nbsp;</> : targetChar}
+          </span>
+          <span className="pending">{pendingText}</span>
         </div>
+        
         <input
           ref={inputRef}
           type="text"
