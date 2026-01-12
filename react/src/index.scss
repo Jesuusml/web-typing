@@ -170,13 +170,15 @@ button {
   0%,
   100% {
     color: var(--pending);
+    border-bottom: 2px solid var(--accent);
   }
 
   50% {
     color: var(--error);
+    border-bottom: 2px solid var(--error);
   }
 }
 
 .error-flash {
-  animation: flash-error 150ms ease;
+  animation: flash-error 200ms ease;
 }

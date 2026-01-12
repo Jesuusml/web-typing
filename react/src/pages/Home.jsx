@@ -9,10 +9,13 @@ function Home() {
   const [typo, setTypo] = useState(false);
   const [errorKey, setErrorKey] = useState(0);
   const [animating, setAnimating] = useState(false);
+  const [lastKeyTime, setLastKeyTime] = useState(Date.now());
   const inputRef = useRef(null);
-  const typewriterSlideFX = useRef(new Audio('/typewriter-slide.mp3'));
-  const typewriterEndFX = useRef(new Audio('/typewriter-end.mp3'));
-  const animationTime = 1200;
+  const animationTime = 615;
+
+  const returnSound = useRef(new Audio('/sounds/return.mp3'));
+  const typeSound = '/sounds/typing.mp3';
+  const errorSound = '/sounds/error.mp3';
 
   // For display:
   const { completedText, targetChar, pendingText } = useMemo(() => ({
@@ -30,10 +33,12 @@ function Home() {
       if (e.key === displayText[targetIndex]) {
         setTypo(false);
         setTargetIndex(prev => prev + 1);
+        playKeySound();
       }
       else {
         setTypo(true);
         setErrorKey(prev => prev + 1);
+        playErrorSound();
       }
     }
 
@@ -42,16 +47,54 @@ function Home() {
     }
   }
 
+  const playKeySound = () => {
+    const sound = new Audio(typeSound);
+    const steps = Math.floor(Math.random() * 4) + 1;
+
+    sound.currentTime = steps / 100;
+    sound.volume = 0.5;
+    sound.playbackRate = calculateRate();
+    sound.pan = -0.2 + Math.random() * 0.4;
+
+    sound.play();
+  };
+
+  const playErrorSound = () => {
+    const sound = new Audio(errorSound);
+
+    sound.currentTime = 0.04;
+    sound.play();
+  };
+
+  const calculateRate = () => {
+    const now = Date.now();
+    const delta = (now - lastKeyTime) / 1000;
+    setLastKeyTime(now);
+
+    let rate;
+    if (delta > 0.5) rate = 1;
+    else if (delta > 0.2) rate = 1.1;
+    else if (delta > 0.15) rate = 1.2;
+    else if (delta > 0.1) rate = 1.3;
+    else if (delta > 0.05) rate = 1.4;
+    else rate = 1.5;
+
+    return rate;
+  };
+
   const nextLevel = () => {
-    const newText = 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde ipsam cum modi eveniet eum dolores, accusantium quia quis, ducimus dicta iure?';
+    const newText = 'Lorem ipsum dolor sit amet consectetur adipisicing elit.';
 
     // Resets variables
     setDisplayText(newText);
     setTargetIndex(0);
     setTypo(false);
+    returnSound.current.currentTime = 0;
+    returnSound.current.volume = 0.6;
 
     // Starts animation
     setAnimating(true);
+    returnSound.current.play();
     setTimeout(() => {
       setAnimating(false);
     }, animationTime + 10);
@@ -83,17 +126,8 @@ function Home() {
         <div
           className={`text-display ${animating ? 'slide-in' : ''}`}
           style={{ '--animation-time': `${animationTime}ms` }}
-          onTransitionStart={() => {
-            typewriterSlideFX.current.currentTime = 0;
-            typewriterSlideFX.current.play();
-          }}
-          onTransitionEnd={() => {
-            typewriterEndFX.current.currentTime = 0;
-            typewriterEndFX.current.play();
-          }}
         >
           {/* <span className="correct">{completedText}</span> */}
-          <span></span>
           <span key={errorKey} className={`pending current ${typo ? 'error-flash' : ''}`}>
             {targetChar === ' ' ? <>&nbsp;</> : targetChar}
           </span>
